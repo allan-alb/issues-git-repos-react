@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Form, SubmitButton, List } from './styles';
+import { Form, SubmitButton, List, Input } from './styles';
 
 export default class Main extends Component {
   // eslint-disable-next-line react/state-in-constructor
@@ -13,6 +13,7 @@ export default class Main extends Component {
     newRepo: '',
     repositories: [],
     loading: 0,
+    error: 0,
   };
 
   // Carregar os dados do localStorage
@@ -34,31 +35,38 @@ export default class Main extends Component {
   }
 
   handleInputChange = (e) => {
-    this.setState({ newRepo: e.target.value });
+    this.setState({ newRepo: e.target.value, error: 0 });
   };
 
   handleSubmit = async (e) => {
     e.preventDefault();
 
     this.setState({ loading: 1 });
+    try {
+      const { newRepo, repositories } = this.state;
 
-    const { newRepo, repositories } = this.state;
+      const response = await api.get(`/repos/${newRepo}`);
 
-    const response = await api.get(`/repos/${newRepo}`);
+      const data = {
+        name: response.data.full_name,
+      };
 
-    const data = {
-      name: response.data.full_name,
-    };
-
-    this.setState({
-      repositories: [...repositories, data],
-      newRepo: '',
-      loading: 0,
-    });
+      this.setState({
+        repositories: [...repositories, data],
+        newRepo: '',
+        loading: 0,
+        error: 0,
+      });
+    } catch (err) {
+      this.setState({
+        loading: 0,
+        error: 1,
+      });
+    }
   };
 
   render() {
-    const { newRepo, repositories, loading } = this.state;
+    const { newRepo, repositories, loading, error } = this.state;
     return (
       <Container>
         <h1>
@@ -67,7 +75,8 @@ export default class Main extends Component {
         </h1>
 
         <Form onSubmit={this.handleSubmit}>
-          <input
+          <Input
+            error={error}
             type="text"
             placeholder="Adicionar repositório"
             value={newRepo}
