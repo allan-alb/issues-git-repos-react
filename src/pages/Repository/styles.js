@@ -42,11 +42,37 @@ export const Owner = styled.div`
   }
 `;
 
+export const Radios = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+
+  label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    input {
+      margin-right: 5px;
+    }
+  }
+`;
+
 export const IssueList = styled.ul`
-  padding-top: 30px;
-  margin-top: 30px;
+  padding-top: 20px;
+  margin-top: 20px;
   border: 1px solid #eee;
   list-style: none;
+
+  .radios {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-around;
+  }
 
   li {
     display: flex;
