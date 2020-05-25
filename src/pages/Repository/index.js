@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import api from '../../services/api';
 
-import { Loading, Owner, IssueList, Radios } from './styles';
+import { FaAngleRight, FaAngleLeft } from 'react-icons/fa';
+import api from '../../services/api';
+import { Loading, Owner, IssueList, Radios, PageControl } from './styles';
 import Container from '../../components/Container';
 
 export default class Repository extends Component {
@@ -22,22 +23,16 @@ export default class Repository extends Component {
     issues: [],
     loading: 1,
     state: 'open',
+    page: 1,
   };
 
   componentDidMount() {
     this.loadIssues();
   }
 
-  /* componentDidUpdate(prevProps, prevState) {
-    // eslint-disable-next-line react/destructuring-assignment
-    if (this.state.state !== prevState.state) {
-      this.loadIssues();
-    }
-  } */
-
   loadIssues = async () => {
     const { match } = this.props;
-    const { state } = this.state;
+    const { state, page } = this.state;
 
     const repoName = decodeURIComponent(match.params.repository);
 
@@ -46,6 +41,7 @@ export default class Repository extends Component {
       api.get(`/repos/${repoName}/issues`, {
         params: {
           state,
+          page,
           per_page: 5,
         },
       }),
@@ -67,8 +63,31 @@ export default class Repository extends Component {
     this.loadIssues();
   };
 
+  handlePage = async (e) => {
+    const { disabled } = e.target.attributes;
+    const { page: currentPage } = this.state;
+
+    if (!disabled) {
+      const { id } = e.target;
+
+      if (id === 'next') {
+        await this.setState({
+          page: currentPage + 1,
+        });
+
+        this.loadIssues();
+      } else if (id === 'previous') {
+        await this.setState({
+          page: currentPage - 1,
+        });
+
+        this.loadIssues();
+      }
+    }
+  };
+
   render() {
-    const { repository, issues, loading, state } = this.state;
+    const { repository, issues, loading, state, page } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>;
@@ -93,7 +112,7 @@ export default class Repository extends Component {
                 onClick={this.handleRadio}
                 checked={state === 'all'}
               />
-              All issues
+              Todos
             </label>
             <label htmlFor="open">
               <input
@@ -104,7 +123,7 @@ export default class Repository extends Component {
                 onClick={this.handleRadio}
                 checked={state === 'open'}
               />
-              Open issues
+              Abertos
             </label>
             <label htmlFor="closed">
               <input
@@ -115,7 +134,7 @@ export default class Repository extends Component {
                 onClick={this.handleRadio}
                 checked={state === 'closed'}
               />
-              Closed issues
+              Fechados
             </label>
           </Radios>
           {issues.map((issue) => (
@@ -132,6 +151,18 @@ export default class Repository extends Component {
               </div>
             </li>
           ))}
+          <PageControl>
+            <FaAngleLeft
+              id="previous"
+              onClick={this.handlePage}
+              disabled={page < 2}
+            />
+            <FaAngleRight
+              id="next"
+              onClick={this.handlePage}
+              disabled={issues.length < 5}
+            />
+          </PageControl>
         </IssueList>
       </Container>
     );

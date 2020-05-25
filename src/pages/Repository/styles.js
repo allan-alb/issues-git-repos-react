@@ -127,3 +127,24 @@ export const IssueList = styled.ul`
     }
   }
 `;
+
+export const PageControl = styled.div`
+  margin: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  #previous,
+  #next {
+    &:hover {
+      color: #1149c1;
+      cursor: pointer;
+    }
+
+    &[disabled] {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+`;
