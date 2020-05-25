@@ -90,7 +90,7 @@ export default class Repository extends Component {
     const { repository, issues, loading, state, page } = this.state;
 
     if (loading) {
-      return <Loading>Carregando</Loading>;
+      return <Loading>Carregando...</Loading>;
     }
 
     return (

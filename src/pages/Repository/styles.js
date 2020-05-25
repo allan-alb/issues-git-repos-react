@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Loading = styled.div`
   color: #fff;
-  font-size: 30px;
+  font-size: 25px;
   font-weight: bold;
   display: flex;
   align-items: center;
